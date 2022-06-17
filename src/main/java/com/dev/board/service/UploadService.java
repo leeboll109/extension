@@ -132,6 +132,12 @@ public class UploadService {
 				return result;
 			}
 		}
+		
+		if(list.size() > 200) {
+			result = -2;
+			return result;
+		}
+		
 		result = mapper.setExtName(extName);
 		
 		return result;

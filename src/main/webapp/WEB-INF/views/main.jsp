@@ -27,9 +27,6 @@ $(document).ready(function(){
 		extUse(this);
 	});
 	
-	$("input[name='fileListBtn']").on("click", function(){
-		$(this).val
-	});
 })
 
 function extUse(data){
@@ -77,6 +74,10 @@ function fileUpload(){
 		data : formData,
 		type : "POST",
 		success : function(result){
+			if(result == -2){
+				alert("확장자가 200개를 넘었습니다.");
+				return;	
+			}
 			if(result < 0){
 				alert("업로드를 지원하지 않는 확장자입니다.");
 				return;
