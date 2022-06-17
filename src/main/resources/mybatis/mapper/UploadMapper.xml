@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dev.board.dto.UploadMapper">
+	
+	<select id="getFileList" resultType="com.dev.board.vo.UploadVO">
+		SELECT *
+		FROM files	
+	</select>
+	
+	<select id="getExtList" resultType="com.dev.board.vo.ExtNameVO">
+		SELECT *
+		FROM exts	
+	</select>
+	
+	<insert id="setFileUpload" parameterType="com.dev.board.vo.UploadVO">
+		INSERT INTO files
+		(	fileName,
+			fileOriName,
+			fileUrl,
+			fileSize,
+			fileTime
+		)
+		values
+		(
+			#{fileName},
+			#{fileOriName},
+			#{fileUrl},
+			#{fileSize},
+			now()
+		)		
+	</insert>
+	
+	<insert id="setExtName" parameterType="String">
+		INSERT INTO exts
+		(	extName,
+			extTime,
+			extDp,
+			extUse
+		)
+		values
+		(
+			#{extName},
+			now(),
+			"1",
+			"1"
+		)		
+	</insert>
+	
+	<delete id="deleteExt" parameterType="String">
+		DELETE FROM exts
+		WHERE extName = #{extName}
+	</delete>
+	
+	<update id="updateExtUse" parameterType="com.dev.board.vo.ExtNameVO">
+		UPDATE exts SET extUse = #{extUse} 
+		WHERE extName = #{extName}
+	</update>
+	
+	<delete id="deleteFile" parameterType="String">
+		DELETE FROM files
+		WHERE fileName = #{fileName}
+	</delete>
+</mapper>
