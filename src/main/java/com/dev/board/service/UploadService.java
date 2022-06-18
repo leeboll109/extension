@@ -3,28 +3,40 @@ package com.dev.board.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.dev.board.dto.UploadMapper;
 import com.dev.board.vo.ExtNameVO;
 import com.dev.board.vo.UploadVO;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class UploadService {
 
 	@Autowired
 	private UploadMapper mapper;
-	
+	private final AmazonS3Client amazonS3Client;
 	private String base_path = "";
+	
+	@Value("${cloud.aws.s3.bucket}")
+	private String bucketName;
 		
 	public int setFileList(MultipartFile upFile) throws Exception{
 		
@@ -61,6 +73,61 @@ public class UploadService {
 		
 		int resultMsg = mapper.setFileUpload(file);
 		return resultMsg; 
+	}
+
+	public int setS3File(MultipartFile upFile) throws Exception{
+		
+ 		String originalFileName = upFile.getOriginalFilename();
+		String ext = originalFileName.substring(originalFileName.lastIndexOf(".") + 1, originalFileName.length());
+		long fileSize = upFile.getSize();
+		byte[] data = upFile.getBytes(); 
+
+		// 확장자 소문자로 고정
+		ext = ext.toLowerCase();
+		
+		List<ExtNameVO> list = mapper.getExtList();
+		// 사용하려는 확장자는 1로 표시
+		for(ExtNameVO item : list) {
+			String name = item.getExtName();
+			// 이미 존재하는 확장자이기 때문에 실패
+			if(ext.equals(name) && "1".equals(item.getExtUse())) {
+				return -1;
+			}
+		}
+		mkDirS3();
+		String fileName = base_path + "/" + originalFileName;
+		ObjectMetadata oMetadata = new ObjectMetadata();
+		oMetadata.setContentType(upFile.getContentType());
+		InputStream inputStream = upFile.getInputStream();
+		amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, oMetadata)
+				.withCannedAcl(CannedAccessControlList.PublicRead));
+		
+		UUID uuid = UUID.randomUUID();
+		
+		UploadVO file = new UploadVO();
+		file.setFileOriName(originalFileName);
+		file.setFileUrl(base_path);
+		file.setFileName(uuid + "." + ext);
+		file.setFileSize(Long.toString(fileSize));
+		
+		int resultMsg = mapper.setFileUpload(file);
+		return resultMsg; 
+	}
+	
+	public void mkDirS3() throws IOException {
+		
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(cal.YEAR);
+		int month = cal.get(cal.MONTH) + 1;
+		int date = cal.get(cal.DATE);
+		
+		base_path = "/";
+		
+		base_path += Integer.toString(year);
+		base_path += Integer.toString(month);
+		base_path += Integer.toString(date);
+		
+		System.out.println(base_path);
 	}
 	
 	public void mkDir() throws IOException {

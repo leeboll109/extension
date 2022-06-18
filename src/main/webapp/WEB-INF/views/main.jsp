@@ -157,6 +157,13 @@ function fileDelete(data){
 		}
 	});
 }
+
+function checkKey(event){
+	if(!(event.keyCode >= 37 && event.keyCode <= 40)){
+		var inputCal =$(this).val();
+		$(this).val(inputVal.replace(/[^A-Za-z0-9]/gi,''));
+	}
+}
 </script>
 <body>
 <div class="content">
@@ -187,7 +194,7 @@ function fileDelete(data){
 		</tr>
 		<tr>
 			<td>커스텀 확장자</td>
-			<td colspan="6"><input type="text" id="textAdd" placeholder="확장자 입력" style="width:100%;"></td>
+			<td colspan="6"><input type="text" id="textAdd" placeholder="확장자 입력" style="width:100%;" onkeypress="checkKey(event)"></td>
 			<td><input type="button" id="textAddBtn" value="+추가"></td>
 		</tr>
 		<tr>

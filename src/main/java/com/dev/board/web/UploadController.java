@@ -20,7 +20,7 @@ public class UploadController {
 	@PostMapping("/upload")
 	public int upload(@RequestParam(value="uploadFile", required=false) MultipartFile file) throws Exception {
 		
-		int result = service.setFileList(file);
+		int result = service.setS3File(file);
 		
 		return result;
 	}
