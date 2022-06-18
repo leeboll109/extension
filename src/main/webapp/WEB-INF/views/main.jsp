@@ -27,6 +27,9 @@ $(document).ready(function(){
 		extUse(this);
 	});
 	
+	$("#textAdd").keyup(function(e){
+		checkKey(e, this);
+	});
 })
 
 function extUse(data){
@@ -158,10 +161,10 @@ function fileDelete(data){
 	});
 }
 
-function checkKey(event){
+function checkKey(event, t){
 	if(!(event.keyCode >= 37 && event.keyCode <= 40)){
-		var inputCal =$(this).val();
-		$(this).val(inputVal.replace(/[^A-Za-z0-9]/gi,''));
+		var inputVal =$(t).val();
+		$(t).val(inputVal.replace(/[^A-Za-z0-9]/gi,''));
 	}
 }
 </script>
@@ -194,7 +197,7 @@ function checkKey(event){
 		</tr>
 		<tr>
 			<td>커스텀 확장자</td>
-			<td colspan="6"><input type="text" id="textAdd" placeholder="확장자 입력" style="width:100%;" onkeypress="checkKey(event)"></td>
+			<td colspan="6"><input type="text" id="textAdd" placeholder="확장자 입력" style="width:100%;"></td>
 			<td><input type="button" id="textAddBtn" value="+추가"></td>
 		</tr>
 		<tr>
