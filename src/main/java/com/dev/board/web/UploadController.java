@@ -46,9 +46,9 @@ public class UploadController {
 	}
 	
 	@PostMapping("/extDelete")
-	public int extDelete(@RequestParam("extOriName") String extOriName) {
+	public int extDelete(@RequestParam("extName") String extName) {
 		
-		int result = service.deleteExt(extOriName);
+		int result = service.deleteExt(extName);
 		
 		return result;
 	}

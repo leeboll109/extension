@@ -219,9 +219,9 @@ public class UploadService {
 	
 	// 물리적으로 제거
 	// 리스트로 남기기 보다 제거하고 다시 생성
-	public int deleteExt(String extOriName) {
+	public int deleteExt(String extName) {
 		
-		int result = mapper.deleteExt(extOriName);
+		int result = mapper.deleteExt(extName);
 		
 		return result;
 	}
